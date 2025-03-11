@@ -1,40 +1,49 @@
 package net.neganote.mfr;
 
-import com.mojang.logging.LogUtils;
+import com.tterrag.registrate.util.entry.RegistryEntry;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neganote.mfr.common.MFRCommonProxy;
+import net.neganote.mfr.client.MFRClientProxy;
+import net.neganote.mfr.registrate.MFRRegistrate;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod(ModernFissionReactors.MODID)
+@Mod(ModernFissionReactors.MOD_ID)
+@SuppressWarnings("unused")
 public class ModernFissionReactors
 {
     // Define mod id in a common place for everything to reference
-    public static final String MODID = "modernfissionreactors";
+    public static final String MOD_ID = "modernfissionreactors";
     // Directly reference a slf4j logger
-    private static final Logger LOGGER = LogUtils.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger("ModernFissionReactors");
 
-    public ModernFissionReactors()
-    {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public static final MFRRegistrate REGISTRATE = MFRRegistrate.create(MOD_ID);
 
-        // Register the commonSetup method for modloading
-        modEventBus.addListener(this::commonSetup);
+    public static RegistryEntry<CreativeModeTab> MFR_CREATIVE_TAB = REGISTRATE
+            .defaultCreativeTab(MOD_ID, builder -> builder
+                    .title(REGISTRATE.addLang("itemGroup", id("creative_tab"), "Modern Fission Reactors"))
+                    .build())
+            .register();
 
-        // Register ourselves for server and other game events we are interested in
-        MinecraftForge.EVENT_BUS.register(this);
 
-        // Register the item to a creative tab
-        modEventBus.addListener(this::addCreative);
+    public ModernFissionReactors() {
+        ModernFissionReactors.init();
+
+        DistExecutor.unsafeRunForDist(() -> MFRClientProxy::new, () -> MFRCommonProxy::new);
+    }
+
+    private static void init() {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
@@ -42,7 +51,11 @@ public class ModernFissionReactors
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
 
+        MFRCommonProxy.init();
+    }
 
+    public static ResourceLocation id(String path) {
+        return new ResourceLocation(MOD_ID, path);
     }
 
     // Add the example block item to the building blocks tab
@@ -60,7 +73,7 @@ public class ModernFissionReactors
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
-    @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents
     {
         @SubscribeEvent
