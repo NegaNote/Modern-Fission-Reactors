@@ -1,7 +1,6 @@
 package net.neganote.mfr.common.block;
 
 import com.tterrag.registrate.util.entry.BlockEntry;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.neganote.mfr.ModernFissionReactors;
@@ -16,10 +15,6 @@ public class MFRBlocks {
                     .simpleBlock(ctx.getEntry(), prov.models()
                     .cubeAll("debug_block", ModernFissionReactors.id("block/debug_block"))))
             .item()
-            .model((ctx, prov) -> {
-                BlockItem item = ctx.getEntry();
-                prov.blockItem(() -> item);
-            })
             .build()
             .register();
 
