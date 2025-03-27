@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "modernfissionreactors:block/debug_block"
+    }
+  }
+}

@@ -2,6 +2,7 @@ package net.neganote.mfr.common.item;
 
 import com.tterrag.registrate.util.entry.ItemEntry;
 import net.minecraft.world.item.Item;
+import net.neganote.mfr.ModernFissionReactors;
 
 import static net.neganote.mfr.ModernFissionReactors.REGISTRATE;
 
@@ -13,5 +14,7 @@ public class MFRItems {
             .defaultModel()
             .register();
 
-    public static void init() {}
+    public static void init() {
+        ModernFissionReactors.LOGGER.debug("Registering MFR items...");
+    }
 }
